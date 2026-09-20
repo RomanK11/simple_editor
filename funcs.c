@@ -25,11 +25,33 @@ int add_line(char ***buffer, size_t *line_count, const char *line)
 
     return 0;
 }
+
+int edit_line(char **buffer, size_t line_count, size_t indx, const char *new_text)
+{
+    if (indx >= line_count)
+    {
+        return 1;
+    }
+    
+    char *new_line = malloc(strlen(new_text) + 1);
+
+    if (new_line == NULL)
+    {
+        return 1;
+    }
+    
+    strcpy(new_line, new_text);
+    free(buffer[indx]);
+    buffer[indx] = new_line;
+
+    return 0;
+}
+
 void free_buffer(char **buffer, size_t line_count)
 {
     for (size_t i = 0; i < line_count; i++)
     {
-        free(buffer[i]);
+        free(buffer[i]);    
     }
 
     free(buffer);

@@ -43,16 +43,16 @@ int main(int argc, char const *argv[])
             printf("%c", temp[i]);
         }
         printf("\n");
-        
-        
+                
         //add_line
-        if (add_line(&buffer, &line_count, temp) != 0)
+        if(add_line(&buffer, &line_count, temp) != 0)
         {
             fprintf(stderr, "Failed to add line\n");
             free_buffer(buffer, line_count);
             fclose(f);
             return 1;
         }
+
     }
     fclose(f);
     f = NULL;
@@ -68,14 +68,7 @@ int main(int argc, char const *argv[])
 
         temp[strcspn(temp, "\n")] = '\0';
 
-        int res = add_line(&buffer, &line_count, temp);
-        if (res == 1)
-        {
-            free_buffer(buffer, line_count);
-            return 1;
-        }   
-        
-        if (strcmp(buffer[line_count - 1], ":save") == 0)
+        if (strcmp(temp, ":save") == 0)
         {
             FILE *save_file = fopen(argv[1], "w");
 
@@ -86,7 +79,7 @@ int main(int argc, char const *argv[])
                 return 1;
             }
 
-            for (size_t i = 0; i < line_count - 1; i++)
+            for (size_t i = 0; i < line_count; i++)
             {
                 fputs(buffer[i], save_file);
                 fputc('\n', save_file);
@@ -97,13 +90,61 @@ int main(int argc, char const *argv[])
             printf("saved\n");
             continue;
         }
-        if (strcmp(buffer[line_count - 1], ":quit") == 0)
+
+        if (strcmp(temp, ":quit") == 0)
         {
-            free_buffer(buffer, line_count);
             break;
         }
+
+        if (strcmp(temp, ":edit") == 0)
+        {
+            char input[MAX_LEN];
+
+            printf("line: ");
+
+            if (fgets(input, MAX_LEN, stdin) == NULL)
+            {
+                break;
+            }
+
+            size_t choice = strtoul(input, NULL, 10);
+
+            if (choice == 0 || choice > line_count)
+            {
+                printf("Invalid line\n");
+                continue;
+            }
+
+            choice--;
+
+            char new_text[MAX_LEN];
+
+            printf("text: ");
+
+            if (fgets(new_text, MAX_LEN, stdin) == NULL)
+            {
+                break;
+            }
+
+            new_text[strcspn(new_text, "\n")] = '\0';
+
+            if (edit_line(buffer, line_count, choice, new_text) != 0)
+            {
+                printf("Invalid line\n");
+            }
+
+            continue;
+        }
+
+        int res = add_line(&buffer, &line_count, temp);
+        if (res == 1)
+        {
+            free_buffer(buffer, line_count);
+            return 1;
+        }   
+        
     }
+    free_buffer(buffer, line_count);
     
     return 0;
-}
-
+}       

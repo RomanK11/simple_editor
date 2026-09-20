@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 int add_line(char ***buffer, size_t *line_count, const char *line);
+int edit_line(char **buffer, size_t line_count, size_t indx, const char *new_text);
 void free_buffer(char **buffer, size_t line_count);
 
 #endif
