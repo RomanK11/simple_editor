@@ -47,6 +47,28 @@ int edit_line(char **buffer, size_t line_count, size_t indx, const char *new_tex
     return 0;
 }
 
+int delete_line(char **buffer, size_t *line_count, size_t indx)
+{
+    if (indx >= *line_count)
+    {
+        return 1;
+    }
+
+    char *to_free = buffer[indx];
+
+    for (size_t i = indx; i < *line_count - 1; i++)
+    {
+        buffer[i] = buffer[i + 1];
+    }
+    
+    free(to_free);
+    (*line_count)--;
+
+    buffer[*line_count] = NULL;
+
+    return 0;
+}
+
 void free_buffer(char **buffer, size_t line_count)
 {
     for (size_t i = 0; i < line_count; i++)

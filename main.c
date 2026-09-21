@@ -96,9 +96,10 @@ int main(int argc, char const *argv[])
             break;
         }
 
-        if (strcmp(temp, ":edit") == 0)
+        if (strcmp(temp, ":delete") == 0)
         {
             char input[MAX_LEN];
+            char *end;
 
             printf("line: ");
 
@@ -107,9 +108,45 @@ int main(int argc, char const *argv[])
                 break;
             }
 
-            size_t choice = strtoul(input, NULL, 10);
+            size_t choice = strtoul(input, &end, 10);
+            
+            if (choice == 0 || choice > line_count || *end != '\n')
+            {
+                printf("Invalid line\n");
+                continue;
+            }
 
-            if (choice == 0 || choice > line_count)
+            choice--;
+
+            int res = delete_line(buffer, &line_count , choice);
+
+            if (res != 0)
+            {
+                printf("error\n");
+            }
+            else
+            {
+                printf("deleted\n");
+            }
+   
+            continue;    
+        } 
+
+        if (strcmp(temp, ":edit") == 0)
+        {
+            char input[MAX_LEN];
+            char *end;
+
+            printf("line: ");
+
+            if (fgets(input, MAX_LEN, stdin) == NULL)
+            {
+                break;
+            }
+
+            size_t choice = strtoul(input, &end, 10);
+
+            if (choice == 0 || choice > line_count || *end != '\n')
             {
                 printf("Invalid line\n");
                 continue;
@@ -142,7 +179,7 @@ int main(int argc, char const *argv[])
             free_buffer(buffer, line_count);
             return 1;
         }   
-        
+
     }
     free_buffer(buffer, line_count);
     
