@@ -130,6 +130,46 @@ int main(int argc, char const *argv[])
             }
    
             continue;    
+        }
+        if (strcmp(temp, ":insert") == 0)
+        {
+            char input[MAX_LEN];
+            char *end;
+
+            printf("line: ");
+
+            if (fgets(input, MAX_LEN, stdin) == NULL)
+            {
+                break;
+            }
+
+            size_t choice = strtoul(input, &end, 10);
+            
+            if (choice == 0 || choice > line_count || *end != '\n')
+            {
+                printf("Invalid line\n");
+                continue;
+            }
+
+            char new_text[MAX_LEN];
+
+            printf("text: ");
+
+            if (fgets(new_text, MAX_LEN, stdin) == NULL)
+            {
+                break;
+            }
+
+            new_text[strcspn(new_text, "\n")] = '\0';
+
+            choice--;
+
+            if (insert_line(&buffer, &line_count, choice, new_text) != 0)
+            {
+                printf("Invalid line\n");
+            }
+   
+            continue;    
         } 
 
         if (strcmp(temp, ":edit") == 0)
