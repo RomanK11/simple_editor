@@ -1,14 +1,30 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
 
-app: main.o funcs.o
-	$(CC) $(CFLAGS) -o app main.o funcs.o
+TARGET = simple_editor
 
-main.o: main.c funcs.h
-	$(CC) $(CFLAGS) -c main.c
+SRC = main.c funcs.c
+OBJ = $(SRC:.c=.o)
 
-funcs.o: funcs.c funcs.h
-	$(CC) $(CFLAGS) -c funcs.c
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f app main.o editor.o
+	rm -f $(OBJ) $(TARGET)
+
+PACKAGE = simple-editor
+VERSION = 1.0.0
+ARCH = amd64
+
+package: $(TARGET)
+	mkdir -p $(PACKAGE)/DEBIAN
+	mkdir -p $(PACKAGE)/usr/bin
+	cp $(TARGET) $(PACKAGE)/usr/bin/
+	chmod 755 $(PACKAGE)/DEBIAN
+	chmod 755 $(PACKAGE)/usr/bin
+	printf 'Package: $(PACKAGE)\nVersion: $(VERSION)\nSection: editors\nPriority: optional\nArchitecture: $(ARCH)\nMaintainer: Roman\nDescription: Simple terminal text editor written in C\n' > $(PACKAGE)/DEBIAN/control
+	chmod 644 $(PACKAGE)/DEBIAN/control
+	dpkg-deb --build $(PACKAGE)
